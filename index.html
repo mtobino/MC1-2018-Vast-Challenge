@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>VAST</title>
+        <script type="text/javascript" src="d3/d3.v3.js"></script>
+        
+        <script type="text/javascript" src="bird-sounds-db.js"></script>
+        <script type="text/javascript" src="bird-sounds-metadata.js"></script>
+
+
+        <style type="text/css">
+            .axis path, .axis line {
+                fill: none;
+                stroke: black;
+                shape-rendering: crispEdges;
+            }
+            .axis text {
+                font-family: sans-serif;
+                font-size: 11px;
+            }
+            
+            .info {
+                margin-top: 1em;
+                height: 14.0625vw;
+                display: flex;
+                flex-direction: row;
+            }
+
+            #spectrogram {
+                width: 25vw;
+                height: 100%;
+                border: 1px solid black;
+            }
+            #spectrogram canvas {
+                width: 100%;
+                height: 100%;
+            }
+            .side-panel {
+                height: 100%;
+                border: 1px solid black;
+                margin-left: 1em;
+                padding-left: .5em;
+                padding-right: .5em;
+            }
+            #metadata p {
+                margin: 0;
+            }
+            #metadata h4 {
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <label for="bird-name">Bird: </label>
+            <select id="bird-name" name="bird-name">
+            </select>
+            <label for="vocalization-type">Vocalization Type: </label>
+            <select id="vocalization-type" name="vocalization-type">
+            </select>
+            <label for="file-id">File ID: </label>
+            <select id="file-id" name="file-id">
+            </select>
+        </div>
+        <div class="info">
+            <div id="spectrogram">
+                <canvas id="spectrogram-canvas"></canvas>
+            </div>
+            <div class="side-panel">
+                <div id="metadata">
+                    <strong>Metadata</strong>
+                </div>
+                <audio id="audio-controls" controls></audio>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            // Filter out vocalization types and file ids that don't exist in bird-sounds-db.js
+            for (const englishName in birdSoundsDrillDown) {
+                const byVocalizationType = birdSoundsDrillDown[englishName];
+                for (const vocalizationType in byVocalizationType) {
+                    byVocalizationType[vocalizationType] = byVocalizationType[vocalizationType]
+                        .filter(fileId => birdSounds[fileId] !== undefined);
+                    if (byVocalizationType[vocalizationType].length == 0) {
+                        delete byVocalizationType[vocalizationType];
+                    } else {
+                        byVocalizationType[vocalizationType].sort((a, b) => parseInt(a) - parseInt(b));
+                    }
+                }
+            }
+
+            var audioData = undefined;
+            var audioObjectURL = "";
+
+            function getSelectedBirdName() {
+                return document.getElementById("bird-name").value;
+            }
+            function getSelectedVocalizationType() {
+                return document.getElementById("vocalization-type").value;
+            }
+            function getSelectedFileId() {
+                return document.getElementById("file-id").value;
+            }
+
+            function updateList(selector, dataset) {
+                let selection = d3.select(selector)
+                    .selectAll("option")
+                    .data(dataset);
+                // Add new options
+                selection.enter()
+                    .append("option");
+                // Update value and text of new and old options
+                selection.attr("value", (d) => d)
+                    .text((d) => d);
+                // Remove extra options
+                selection.exit()
+                    .remove()
+            }
+            
+            function updateVocalizationTypeList() {
+                let birdName = getSelectedBirdName();
+                let vocalizationTypes = Object.getOwnPropertyNames(birdSoundsDrillDown[birdName]);
+                vocalizationTypes.sort();
+                updateList("#vocalization-type", vocalizationTypes);
+                updateFileIdList();
+            }
+
+            function updateFileIdList() {
+                let birdName = getSelectedBirdName();
+                let vocalizationType = getSelectedVocalizationType();
+                let fileIds = birdSoundsDrillDown[birdName][vocalizationType];
+                updateList("#file-id", fileIds);
+                onFileIdSelected();
+            }
+
+
+            function onFileIdSelected() {
+                let fileId = getSelectedFileId();
+                let metadataNames = {"quality": "Quality", "time": "Time", "year": "Year", "x": "X", "y": "Y"};
+                let metadataOrder = ["time", "year", "quality", "x", "y"];
+
+                d3.select("#metadata")
+                    .selectAll("p")
+                    .remove();
+
+                let p = d3.select("#metadata")
+                    .selectAll("p")
+                    .data(metadataOrder)
+                    .enter()
+                    .append("p");
+                p.append("strong")
+                    .text((d) => metadataNames[d] + ": ");
+                p.append("span")
+                    .text((d) => birdSoundsByFileId[fileId][d]);
+
+                setAudio(fileId);
+            }
+
+            let birdNames = Object.getOwnPropertyNames(birdSoundsDrillDown);
+            birdNames.sort();
+            updateList("#bird-name", birdNames);
+            
+            d3.select("#bird-name")
+                .on("change", updateVocalizationTypeList);
+            d3.select("#vocalization-type")
+                .on("change", updateFileIdList);
+            d3.select("#file-id")
+                .on("change", onFileIdSelected);
+            updateVocalizationTypeList();
+
+            function setAudio(fileId) {
+                if (audioObjectURL != "") {
+                    URL.revokeObjectURL(audioObjectURL);
+                }
+                let binString = atob(birdSounds[fileId]);
+                audioData = Uint8Array.from(binString, (m) => m.charCodeAt(0));
+                audioObjectURL = URL.createObjectURL(new Blob([audioData], {type: 'audio/opus'}));
+                document.getElementById("audio-controls").src = audioObjectURL;
+            }
+        </script>
+    </body>
+</html>
