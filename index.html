@@ -74,6 +74,11 @@
                 <audio id="audio-controls" controls></audio>
             </div>
         </div>
+        <div class="bar-graph">
+            <div id="bar-graph">
+
+            </div>
+        </div>
 
         <script type="text/javascript">
             // Filter out vocalization types and file ids that don't exist in bird-sounds-db.js
@@ -125,6 +130,156 @@
                 updateList("#vocalization-type", vocalizationTypes);
                 updateFileIdList();
             }
+            function updateBirdBarGraph()
+            {
+                let birdName = getSelectedBirdName();
+                let vocalizationType = getSelectedVocalizationType();
+                let fileIds = birdSoundsDrillDown[birdName][vocalizationType];
+                let freqMap = {};
+                console.log(fileIds);
+                for(let i = 0; i < fileIds.length; i++)
+                {
+                    console.log(fileIds[i]);
+                    const birdInfo = birdSoundsByFileId[fileIds[i]];
+                    console.log(birdInfo);
+                    freqMap[birdInfo["quality"]] = (freqMap[birdInfo.quality] || 0) + 1;
+                }
+                console.log(freqMap);
+                dataset = [];
+                for(const vocalization in freqMap)
+                {
+                    dataset.push({"grade" : vocalization, "count" : freqMap[vocalization]});
+                }
+                console.log(dataset);
+                const barHeight = 25;
+                const marginTop = 30;
+                const marginRight = 0;
+                const marginBottom = 10;
+                const marginLeft = 30;
+                const width = 600;
+                const height = Math.ceil((dataset.length + 0.1) * barHeight) + marginTop + marginBottom;
+                console.log(height);
+                // creating the scales
+                var x = d3.scale.linear()
+                    .domain([0, d3.max(dataset, d => d.count)])
+                    .range([marginLeft, width - marginRight]);
+                
+                var y = d3.scale.ordinal()
+                    .domain(dataset.sort((a,b) => {
+                        return a.count - b.count;
+                    }).map(d => d.grade))
+                    .rangeBands([marginTop, height - marginBottom]);
+                
+                // Create a value format.
+                const format = x.tickFormat(20, "%");
+                
+                console.log(x)
+                console.log(x(5))
+                console.log(y)
+                console.log(y("A"))
+
+                // Create the SVG container.
+                const svg = d3.select("#bar-graph")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("viewBox", [0, 0, width, height])
+                    .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
+
+                //Append a rect for each letter.
+                svg.append("g")
+                    .attr("fill", "steelblue")
+                    .selectAll()
+                    .data(dataset)
+                    .enter()
+                    .append("rect")
+                    .attr("x", x(0))
+                    .attr("y", (d) => y(d.grade))
+                    .attr("width", (d) => x(d.count) - x(0))
+                    .attr("height", (d) => y.rangeBand());
+
+                // svg.selectAll("rect")
+                //     .data(dataset)
+                //     .enter()
+                //     .append("rect")
+                //     .attr("x", (d, i) => {
+                //         return i * (width / dataset.length)
+                //     })
+                //     .attr("y", (d) => {
+                //         return height - (d.count * 5)
+                //     })
+                //     .attr("width", (d) => {
+                //         return width / dataset.length - barHeight;
+                //     })
+                //     .attr("height", (d) => {
+                //         return d.count * 5
+                //     })
+                //     .attr("fill", function(d) {
+				// 	    return "rgb(0, 0, " + (d * 10) + ")";
+			    //     });
+
+                // Append a label for each letter.
+                // svg.selectAll("text")
+                //     .data(dataset)
+                //     .enter()
+                //     .append("text")
+                //     .text((d) => d.count)
+                //     .attr("text-anchor", "middle")
+                //     .attr("x", (d, i) =>{
+                //         return i * (width / dataset.length) + (width / dataset.length - barPadding)
+                //     })
+                //     .attr("y", (d) => {
+                //         return height - (d * 4) + 14;
+                //     });
+                svg.append("g")
+                    .attr("fill", "white")
+                    .attr("text-anchor", "end")
+                    .selectAll()
+                    .data(dataset)
+                    .enter()
+                    .append("text")
+                    .attr("x", (d) => x(d.count))
+                    .attr("y", (d) => y(d.grade) + y.rangeBand() / 2)
+                    .attr("dy", "0.35em")
+                    .attr("dx", -4)
+                    .text((d) => (d.count))
+                    .call((text) => text.filter(d => x(d.count) - x(0) < 20) // short bars
+                    .attr("dx", +4)
+                    .attr("fill", "black")
+                    .attr("text-anchor", "start"));
+
+                // Create the axes.
+                // svg.append("g")
+                //     .attr("transform", `translate(0,${marginTop})`)
+                //     .call(d3.axisTop(x).ticks(width / 80, "%"))
+                //     .call(g => g.select(".domain").remove());
+
+                var xAxis = d3.svg.axis()
+                                .scale(x)
+                                .orient("bottom")
+                                .ticks(dataset.length + 1);
+                svg.append("g")
+                    .attr("class", "axis")
+                    .attr("transform",`translate(0,${marginTop})`) // swapping marginTop and zero sorta flip it
+                    .call(xAxis);
+                
+                var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+                    .ticks(dataset.length + 1);
+
+                // svg.append("g")
+                //     .attr("transform", `translate(${marginLeft},0)`)
+                //     .call(d3.axisLeft(y).tickSizeOuter(0));
+                
+                svg.append("g")
+                    .attr("class", "axis")
+                    .attr("transform", `translate(${marginLeft},0)`)
+                    .call(yAxis);                    
+                
+                //return svg.node();
+                                                
+            }
 
             function updateFileIdList() {
                 let birdName = getSelectedBirdName();
@@ -162,7 +317,11 @@
             updateList("#bird-name", birdNames);
             
             d3.select("#bird-name")
-                .on("change", updateVocalizationTypeList);
+                .on("change", (e) => 
+                {
+                    updateVocalizationTypeList();
+                    updateBirdBarGraph();
+                });
             d3.select("#vocalization-type")
                 .on("change", updateFileIdList);
             d3.select("#file-id")
@@ -177,6 +336,11 @@
                 audioData = Uint8Array.from(binString, (m) => m.charCodeAt(0));
                 audioObjectURL = URL.createObjectURL(new Blob([audioData], {type: 'audio/opus'}));
                 document.getElementById("audio-controls").src = audioObjectURL;
+            }
+
+            function barGraph(dataset){
+                
+                return 
             }
         </script>
     </body>
