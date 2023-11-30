@@ -130,27 +130,34 @@
                 updateList("#vocalization-type", vocalizationTypes);
                 updateFileIdList();
             }
+
             function updateBirdBarGraph()
             {
-                let birdName = getSelectedBirdName();
-                let vocalizationType = getSelectedVocalizationType();
-                let fileIds = birdSoundsDrillDown[birdName][vocalizationType];
-                let freqMap = {};
-                console.log(fileIds);
-                for(let i = 0; i < fileIds.length; i++)
+                let birdName = getSelectedBirdName();   // get the bird name
+                let vocalizationType = getSelectedVocalizationType(); // get the current vocalization type
+                let fileIds = birdSoundsDrillDown[birdName][vocalizationType]; // get all the file ids that map to that specific bird and specfic vocalization type
+                let freqMap = {}; // start a frequency map
+                console.log(fileIds); // log for debug
+                for(let i = 0; i < fileIds.length; i++) // iterating through all of the file ids
                 {
-                    console.log(fileIds[i]);
-                    const birdInfo = birdSoundsByFileId[fileIds[i]];
-                    console.log(birdInfo);
-                    freqMap[birdInfo["quality"]] = (freqMap[birdInfo.quality] || 0) + 1;
+                    console.log(fileIds[i]); // log for debug
+                    const birdInfo = birdSoundsByFileId[fileIds[i]]; // get the bird information based on the file id
+                    console.log(birdInfo); // log for debug
+                    freqMap[birdInfo["quality"]] = (freqMap[birdInfo.quality] || 0) + 1; // in the frequency map, set the key to the 'quality' or grade of the bird sound
+                    // set the value equal to the current recorded number of sounds with that grade + 1
+                    // || 0 means that that the grade in the freqMap does not exist yet and therefore we are setting it to 0 and adding 1 afterwards
+                    // this is basically a hashmap.getOrDefault(key, 0)
                 }
-                console.log(freqMap);
-                dataset = [];
-                for(const vocalization in freqMap)
+                console.log(freqMap); // log for debug
+                dataset = []; // start an array that will be based into the d3
+                for(const vocalization in freqMap) // for each key in freqMap object
                 {
-                    dataset.push({"grade" : vocalization, "count" : freqMap[vocalization]});
+                    dataset.push({"grade" : vocalization, "count" : freqMap[vocalization]}); // add an entry object to the array
+                    // EX: dataset[0] -> {"grade" : 'B', "count" : 5}
                 }
-                console.log(dataset);
+                console.log(dataset); // log for debug
+                d3.select('#bar-graph').selectAll('*').remove(); // clear the current bar graph
+                // code stolen and modified from https://observablehq.com/@d3/horizontal-bar-chart/2
                 const barHeight = 25;
                 const marginTop = 30;
                 const marginRight = 0;
@@ -171,12 +178,12 @@
                     .rangeBands([marginTop, height - marginBottom]);
                 
                 // Create a value format.
-                const format = x.tickFormat(20, "%");
+                const format = x.tickFormat(20, "%"); // unused
                 
-                console.log(x)
-                console.log(x(5))
-                console.log(y)
-                console.log(y("A"))
+                console.log(x) // log for debug
+                console.log(x(5)) // log for debug
+                console.log(y) // log for debug
+                console.log(y("A")) // log for debug
 
                 // Create the SVG container.
                 const svg = d3.select("#bar-graph")
@@ -194,43 +201,11 @@
                     .enter()
                     .append("rect")
                     .attr("x", x(0))
-                    .attr("y", (d) => y(d.grade))
+                    .attr("y", (d, i) =>  y(d.grade))
                     .attr("width", (d) => x(d.count) - x(0))
                     .attr("height", (d) => y.rangeBand());
 
-                // svg.selectAll("rect")
-                //     .data(dataset)
-                //     .enter()
-                //     .append("rect")
-                //     .attr("x", (d, i) => {
-                //         return i * (width / dataset.length)
-                //     })
-                //     .attr("y", (d) => {
-                //         return height - (d.count * 5)
-                //     })
-                //     .attr("width", (d) => {
-                //         return width / dataset.length - barHeight;
-                //     })
-                //     .attr("height", (d) => {
-                //         return d.count * 5
-                //     })
-                //     .attr("fill", function(d) {
-				// 	    return "rgb(0, 0, " + (d * 10) + ")";
-			    //     });
-
-                // Append a label for each letter.
-                // svg.selectAll("text")
-                //     .data(dataset)
-                //     .enter()
-                //     .append("text")
-                //     .text((d) => d.count)
-                //     .attr("text-anchor", "middle")
-                //     .attr("x", (d, i) =>{
-                //         return i * (width / dataset.length) + (width / dataset.length - barPadding)
-                //     })
-                //     .attr("y", (d) => {
-                //         return height - (d * 4) + 14;
-                //     });
+                // Add the number value to the bar
                 svg.append("g")
                     .attr("fill", "white")
                     .attr("text-anchor", "end")
@@ -248,37 +223,28 @@
                     .attr("fill", "black")
                     .attr("text-anchor", "start"));
 
-                // Create the axes.
-                // svg.append("g")
-                //     .attr("transform", `translate(0,${marginTop})`)
-                //     .call(d3.axisTop(x).ticks(width / 80, "%"))
-                //     .call(g => g.select(".domain").remove());
-
+                // Create axis
                 var xAxis = d3.svg.axis()
                                 .scale(x)
                                 .orient("bottom")
                                 .ticks(dataset.length + 1);
-                svg.append("g")
-                    .attr("class", "axis")
-                    .attr("transform",`translate(0,${marginTop})`) // swapping marginTop and zero sorta flip it
-                    .call(xAxis);
+                
                 
                 var yAxis = d3.svg.axis()
                     .scale(y)
                     .orient("left")
                     .ticks(dataset.length + 1);
 
-                // svg.append("g")
-                //     .attr("transform", `translate(${marginLeft},0)`)
-                //     .call(d3.axisLeft(y).tickSizeOuter(0));
-                
+                // Add axis to the svg
+                svg.append("g")
+                    .attr("class", "axis")
+                    .attr("transform",`translate(0,${marginTop})`) // swapping marginTop and zero sorta flip it
+                    .call(xAxis);
+
                 svg.append("g")
                     .attr("class", "axis")
                     .attr("transform", `translate(${marginLeft},0)`)
-                    .call(yAxis);                    
-                
-                //return svg.node();
-                                                
+                    .call(yAxis);                                                                    
             }
 
             function updateFileIdList() {
@@ -323,7 +289,10 @@
                     updateBirdBarGraph();
                 });
             d3.select("#vocalization-type")
-                .on("change", updateFileIdList);
+                .on("change", (e) => {
+                    updateFileIdList();
+                    updateBirdBarGraph();
+                });
             d3.select("#file-id")
                 .on("change", onFileIdSelected);
             updateVocalizationTypeList();
