@@ -61,3 +61,9 @@ body {
 .map p {
     margin-left: 40%;
 }
+
+#roadMap {
+    background-image: url("Lekagul_Roadways_2018.bmp"); 
+    background-size: 100%;
+    background-repeat: no-repeat;
+}

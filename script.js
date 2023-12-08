@@ -15,12 +15,15 @@
 var audioData = undefined;
 var audioObjectURL = "";
 
+// Returns the name of the bird
 function getSelectedBirdName() {
     return document.getElementById("bird-name").value;
 }
 function getSelectedVocalizationType() {
     return document.getElementById("vocalization-type").value;
 }
+
+// Returns the file-ID value that the user has selected
 function getSelectedFileId() {
     return document.getElementById("file-id").value;
 }
@@ -89,7 +92,11 @@ d3.select("#bird-name")
 d3.select("#vocalization-type")
     .on("change", updateFileIdList);
 d3.select("#file-id")
-    .on("change", onFileIdSelected);
+    .on("change", (e) =>
+    {
+        onFileIdSelected();
+        setMap(); 
+    });
 updateVocalizationTypeList();
 
 function setAudio(fileId) {

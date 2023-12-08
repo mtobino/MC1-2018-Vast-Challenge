@@ -9,14 +9,12 @@
 
         <script type="text/javascript" src="d3/d3.v3.js"></script>
         
-        <script type="text/javascript" src="bird-sounds-db.js"></script>
-        <script type="text/javascript" src="bird-sounds-metadata.js"></script>
+        <script type="text/javascript" src="scripts/bird-sounds-db.js"></script>
+        <script type="text/javascript" src="scripts/bird-sounds-metadata.js"></script>
     </head>
 
 
     <body>
-
-
         <div>
             <label for="bird-name">Bird: </label>
             <select id="bird-name" name="bird-name">
@@ -45,14 +43,12 @@
 
             <div class="map">
                 <p>Map Of Area</p>
-                <div class="canvas">
-                    <img src="Lekagul_Roadways_2018.bmp" alt="Lekagul Roadways in 2018" width="400em">
-
+                <div id="canvas">
+                    <svg id="roadMap" widgth="400" height="400"></svg>
                 </div>
             </div>
         </div>
 
-
-
     </body>
 </html>
+

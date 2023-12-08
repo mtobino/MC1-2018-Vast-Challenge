@@ -1,30 +1,57 @@
 function setMap() {
-    let fileId = getSelectedFileId();
-    let metadataNames = {"x": "X", "y": "Y"};
-    let testData = [300, 250]
 
-    var mapSvg = d3.select("canvas")
-        .append("svg")
-        .attr("width", 400)
-        .attr("height", 400);
+    birdId = getSelectedFileId()
+    
+    var mapSvg = d3.select("#roadMap")
+    
+    mapSvg.selectAll("circle").remove();
+    
 
-    // d3.select("canvas")
-    //     .selectAll("p")
-    //     .remove();
 
-    let dot = mapSvg.select("circle")
-        .data(testData)
+    let dot = mapSvg.selectAll("circle")
+        .data(Object.entries(birdSoundsByFileId))
         .enter()
         .append("circle");
         
+
     dot.attr("cx", function(d, i) {
-        console.log(d);
-        return d;
+        return d[1]["x"];
     })
     .attr("cy", function(d, i) {
-        console.log(d);
-        return d;
+        return d[1]["y"];
     })
-    .attr("r", 50)
-    .attr("fill", "green");
+    .attr("r", function(d, i) {
+        if(checkYear(d[1]["year"])){
+            if(checkName(d[1]["englishName"]))
+                return 5;
+    
+            return 0;
+    }})
+    .attr("fill", function(d, i) {
+        if (getSelectedFileId() == d[0])
+            return "red"
+
+        return "green"
+    })
+    .attr("opacity", function(d, i) {
+        if (getSelectedFileId() == d[0])
+            return "1"
+
+        return "0.15";
+    });
+}
+    
+function checkYear(year)
+{
+    birdId = getSelectedFileId()
+    currentYear = birdSoundsByFileId[birdId]["year"]
+
+    return (year == currentYear) 
+}
+
+function checkName(name)
+{
+    birdName = getSelectedBirdName()
+
+    return (name == birdName)
 }
