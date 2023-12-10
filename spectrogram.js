@@ -61,6 +61,7 @@ class SpectrogramVisualization {
         this.xAxisLabel = this.axisGroup.append("text")
             .classed("axis-label", true)
             .style("text-anchor", "middle")
+            .attr("y", "100%")
             .attr("dy", "-0.5em")
             .text("Time (s)");
         this.yAxisGfx = this.axisGroup.append("g")
@@ -69,9 +70,21 @@ class SpectrogramVisualization {
             .classed("axis-label", true)
             .style("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
+            .attr("y", "0")
             .attr("dy", "1em")
             .text("Frequency (hz)");
-        this.playHeadGfx = this.axisGroup.append("g")
+
+        this.timeFormat = new Intl.NumberFormat("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        this.freqFormat = new Intl.NumberFormat("en-US", {minimumIntegerDigits: 2, minimumFractionDigits: 3});
+        this.coordinateLabel = this.axisGroup.append("text")
+            .classed("coordinate-label", true)
+            .style("text-anchor", "end")
+            .attr("x", "100%")
+            .attr("y", "100%")
+            .attr("dx", "-0.5em")
+            .attr("dy", "-0.5em");
+
+        this.playHeadGfx = this.overlay.append("g")
             .classed("playhead", true);
         this.playHeadGfx.append("line");
 
@@ -93,6 +106,7 @@ class SpectrogramVisualization {
             })
             .on("mousemove", () => {
                 let event = this.transformMouseEvent(d3.event);
+                this.updateCoordinateLabel(event.inCanvas, event.x, event.y);
                 if (event.buttons != 1) {
                     // Only dragging when the primary mouse button is held
                     return;
@@ -102,6 +116,7 @@ class SpectrogramVisualization {
                     this.handleMouseDrag(d3.event.movementX, d3.event.movementY);
                 }
             })
+            .on("mouseleave", () => this.updateCoordinateLabel(false))
             .on("wheel", () => {
                 let event = this.transformMouseEvent(d3.event);
                 if (event.inCanvas) {
@@ -273,6 +288,7 @@ class SpectrogramVisualization {
         if (!this.spectrogram) {
             // Hide axis while waiting for spectrogram to be loaded
             this.axisGroup.style("visibility", "hidden");
+            this.updatePlayhead(false);
             return;
         }
         this.ctx.imageSmoothingEnabled = false;
@@ -313,13 +329,11 @@ class SpectrogramVisualization {
         this.axisGroup.style("visibility", "visible");
         this.xAxisGfx.attr("transform", `translate(0, ${canvasBottom})`)
             .call(xAxis);
-        this.xAxisLabel.attr("x", (canvasLeft + canvasRight) / 2)
-            .attr("y", overlayH);
+        this.xAxisLabel.attr("x", (canvasLeft + canvasRight) / 2);
 
         this.yAxisGfx.attr("transform", `translate(${canvasLeft}, 0)`)
             .call(yAxis);
-        this.yAxisLabel.attr("x", -(canvasTop + canvasBottom) / 2) // transform="rotate(-90)" rotates the coordinates system
-            .attr("y", 0);
+        this.yAxisLabel.attr("x", -(canvasTop + canvasBottom) / 2); // transform="rotate(-90)" rotates the coordinates system
         
         this.updatePlayhead(this.playHeadVisible, this.playHeadTime);
     }
@@ -399,5 +413,22 @@ class SpectrogramVisualization {
             .attr("y1", 0)
             .attr("x2", 0)
             .attr("y2", overlayW);
+    }
+
+    updateCoordinateLabel(visible, x, y) {
+        visible = visible && this.spectrogram;
+        this.coordinateLabel.style("visibility", visible ? "visible" : "hidden");
+        if (!visible) {
+            return;
+        }
+        let timeDomain = this.timeScale.domain();
+        let freqDomain = this.freqScale.domain();
+
+        let secondsPerPixel = (timeDomain[1] - timeDomain[0]) / this.canvas.width;
+        let hzPerPixel = (freqDomain[1] - freqDomain[0]) / this.canvas.height;
+
+        let time = x * secondsPerPixel + timeDomain[0];
+        let frequency = (this.canvas.height - y - 1) * hzPerPixel + freqDomain[0];
+        this.coordinateLabel.text(`Time: ${this.timeFormat.format(time)}s Frequency: ${this.freqFormat.format(frequency / 1000)}kHz`);
     }
 }
