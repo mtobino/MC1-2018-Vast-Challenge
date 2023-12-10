@@ -4,6 +4,7 @@
  * internal buffers.
  * Returned buffers are reused and will be clobbered upon the next call to
  * realFFT.forward or realFFT.reverse
+ * Author: David Choo
  */
 class RealFFT {
     constructor(size, kissFFT) {
