@@ -34,7 +34,7 @@
                 fill: black;
             }
             .info {
-                height: 50vh;
+                height: 45vh;
                 margin-top: 1em;
                 display: flex;
                 flex-direction: row;
@@ -70,7 +70,15 @@
                 padding-left: .5em;
                 padding-right: .5em;
             }
-            #metadata p, h4 {
+            .sound-selection div {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.25em;
+            }
+            .sound-selection p, h4, h3, h2, h1 {
+                margin: 0;
+            }
+            #metadata p, h4, h3, h2, h1 {
                 margin: 0;
             }
 
@@ -81,34 +89,47 @@
         </style>
     </head>
     <body>
-        <div>
-            Main spectrogram: 
-            <label for="bird-name">Bird: </label>
-            <select id="bird-name" name="bird-name">
-            </select>
-            <label for="vocalization-type">Vocalization Type: </label>
-            <select id="vocalization-type" name="vocalization-type">
-            </select>
-            <label for="file-id">File ID: </label>
-            <select id="file-id" name="file-id">
-            </select>
-
-            Test Bird Spectrogram: 
-            <label for="test-bird-id">Kaisos' Test Bird: </label>
-            <select id="test-bird-id" name="test-bird-id"><select>
-            </select>
-        </div>
         <div class="info">
             <div id="main-spectrogram"></div>
             <div class="side-panel">
+                <div class="sound-selection">
+                    <h3>Bird Selection</h3>
+                    <div>
+                        <label for="bird-name">Bird: </label>
+                        <select id="bird-name" name="bird-name">
+                        </select>
+                    </div>
+                    <div>
+                        <label for="vocalization-type">Vocalization Type: </label>
+                        <select id="vocalization-type" name="vocalization-type">
+                        </select>
+                    </div>
+                    <div>
+                        <label for="file-id">File ID: </label>
+                        <select id="file-id" name="file-id">
+                        </select>
+                    </div>
+                </div>
                 <div id="metadata">
-                    <strong>Metadata</strong>
+                    <h3>Metadata</h3>
                 </div>
                 <audio id="main-audio-controls" controls></audio>
             </div>
         </div>
         <div class="info">
             <div id="test-bird-spectrogram"></div>
+            <div class="side-panel">
+                <div class="sound-selection">
+                    <h3>Kaisos' Test Bird Selection</h3>
+                    <label for="test-bird-id">Id: </label>
+                    <select id="test-bird-id" name="test-bird-id"><select>
+                    </select>
+                </div>
+                <div id="metadata">
+                    <h3>Metadata</h3>
+                </div>
+                <audio id="test-bird-audio-controls" controls></audio>
+            </div>
         </div>
 
         <script type="text/javascript">
@@ -135,7 +156,7 @@
             var testBirdSpectrogram = {
                 audioData: undefined,
                 audioObjectUrl: "",
-                audioControls: null,
+                audioControls: d3.select("#test-bird-audio-controls"),
                 visualization: new SpectrogramVisualization(document.getElementById("test-bird-spectrogram"))
             };
 
@@ -248,7 +269,7 @@
                 let audioControls = spectrogramObj.audioControls.node();
                 var playHeadInterval = -1;
                 function updatePlayhead() {
-                    mainSpectrogram.visualization.updatePlayhead(!audioControls.paused, audioControls.currentTime);
+                    spectrogramObj.visualization.updatePlayhead(!audioControls.paused, audioControls.currentTime);
                     if (audioControls.paused) {
                         clearInterval(playHeadInterval);
                     }
@@ -265,6 +286,7 @@
                     });
             }
             linkAudioControls(mainSpectrogram);
+            linkAudioControls(testBirdSpectrogram);
         </script>
     </body>
 </html>
