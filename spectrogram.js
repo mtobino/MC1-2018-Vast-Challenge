@@ -53,22 +53,25 @@ class SpectrogramVisualization {
         this.timeScale = d3.scale.linear();
         this.freqScale = d3.scale.linear();
 
-        this.xAxisGfx = this.overlay.append("g")
+        this.axisGroup = this.overlay.append("g")
+            .style("visibility", "hidden");
+
+        this.xAxisGfx = this.axisGroup.append("g")
             .classed("axis", true);
-        this.xAxisLabel = this.overlay.append("text")
+        this.xAxisLabel = this.axisGroup.append("text")
             .classed("axis-label", true)
             .style("text-anchor", "middle")
             .attr("dy", "-0.5em")
             .text("Time (s)");
-        this.yAxisGfx = this.overlay.append("g")
+        this.yAxisGfx = this.axisGroup.append("g")
             .classed("axis", true);
-        this.yAxisLabel = this.overlay.append("text")
+        this.yAxisLabel = this.axisGroup.append("text")
             .classed("axis-label", true)
             .style("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
             .attr("dy", "1em")
             .text("Frequency (hz)");
-        this.playHeadGfx = this.overlay.append("g")
+        this.playHeadGfx = this.axisGroup.append("g")
             .classed("playhead", true);
         this.playHeadGfx.append("line");
 
@@ -76,8 +79,9 @@ class SpectrogramVisualization {
         this.playHeadVisible = false;
 
         this.spinnerGfx = this.overlay.append("image")
-            .attr("href", "3-dots-bounce.svg")
-            .style("visibility", "hidden");
+            .attr("href", "3-dots-bounce.svg");
+        // Do the initial draw without any audio loaded
+        this.redraw();
 
         window.addEventListener("resize", () => this.redraw());
         
@@ -267,6 +271,8 @@ class SpectrogramVisualization {
             .style("visibility", this.spectrogram ? "hidden" : "visible");
 
         if (!this.spectrogram) {
+            // Hide axis while waiting for spectrogram to be loaded
+            this.axisGroup.style("visibility", "hidden");
             return;
         }
         this.ctx.imageSmoothingEnabled = false;
@@ -304,6 +310,7 @@ class SpectrogramVisualization {
             .orient("left")
             .ticks(12);
 
+        this.axisGroup.style("visibility", "visible");
         this.xAxisGfx.attr("transform", `translate(0, ${canvasBottom})`)
             .call(xAxis);
         this.xAxisLabel.attr("x", (canvasLeft + canvasRight) / 2)
