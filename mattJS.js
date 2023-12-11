@@ -27,9 +27,9 @@ function updateBirdBarGraph()
     // code modified from https://observablehq.com/@d3/horizontal-bar-chart/2
     const barHeight = 25;
     const marginTop = 30;
-    const marginRight = 0;
+    const marginRight = 20;
     const marginBottom = 10;
-    const marginLeft = 30;
+    const marginLeft = 20;
     const width = 600;
     const height = Math.ceil((dataset.length + 0.1) * barHeight) + marginTop + marginBottom;
     console.log(height);
@@ -55,13 +55,14 @@ function updateBirdBarGraph()
     // Create the SVG container.
     const svg = d3.select("#bar-graph")
         .append("svg")
-        .attr("width", width)
+        .attr("width", "100%")
         .attr("height", height)
         .attr("viewBox", [0, 0, width, height])
-        .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
+        .attr("style", "height: auto; font: 10px sans-serif;");
     //Append a rect for each letter.
     svg.append("g")
-        .attr("fill", "red")
+        .attr("fill", "#ff6961")
+        .attr("stroke", "white")
         .selectAll()
         .data(dataset)
         .enter()
@@ -92,8 +93,8 @@ function updateBirdBarGraph()
     // Create axis
     var xAxis = d3.svg.axis()
         .scale(x)
-        .orient("bottom")
-        .ticks(dataset.length + 1)
+        .orient("top")
+        .ticks(x.domain()[1] > 10 ? 10 : x.domain()[1] - x.domain()[0]) // Match ticks to domain size with a limit of 10 ticks
 
     
     
