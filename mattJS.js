@@ -24,7 +24,7 @@ function updateBirdBarGraph()
     }
     console.log(dataset); // log for debug
     d3.select('#bar-graph').selectAll('*').remove(); // clear the current bar graph
-    // code stolen and modified from https://observablehq.com/@d3/horizontal-bar-chart/2
+    // code modified from https://observablehq.com/@d3/horizontal-bar-chart/2
     const barHeight = 25;
     const marginTop = 30;
     const marginRight = 0;
@@ -40,7 +40,7 @@ function updateBirdBarGraph()
     
     var y = d3.scale.ordinal()
         .domain(dataset.sort((a,b) => {
-            return a.count - b.count;
+            return a.grade.charCodeAt(0) - b.grade.charCodeAt(0);
         }).map(d => d.grade))
         .rangeBands([marginTop, height - marginBottom]);
     
@@ -59,10 +59,9 @@ function updateBirdBarGraph()
         .attr("height", height)
         .attr("viewBox", [0, 0, width, height])
         .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
-
     //Append a rect for each letter.
     svg.append("g")
-        .attr("fill", "steelblue")
+        .attr("fill", "red")
         .selectAll()
         .data(dataset)
         .enter()
@@ -92,15 +91,17 @@ function updateBirdBarGraph()
 
     // Create axis
     var xAxis = d3.svg.axis()
-                    .scale(x)
-                    .orient("bottom")
-                    .ticks(dataset.length + 1);
+        .scale(x)
+        .orient("bottom")
+        .ticks(dataset.length + 1)
+
     
     
     var yAxis = d3.svg.axis()
         .scale(y)
         .orient("left")
-        .ticks(dataset.length + 1);
+        .ticks(dataset.length + 1)
+
 
     // Add axis to the svg
     svg.append("g")
