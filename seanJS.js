@@ -15,10 +15,10 @@ function setMap() {
         
 
     dot.attr("cx", function(d, i) {
-        return d[1]["x"];
+        return (d[1]["x"] / 200.0 * 100.0) + "%";
     })
     .attr("cy", function(d, i) {
-        return d[1]["y"];
+        return (100.0 - (d[1]["y"] / 200.0 * 100.0)) + "%"; // Y is down
     })
     .attr("r", function(d, i) {
         if(checkYear(d[1]["year"])){
