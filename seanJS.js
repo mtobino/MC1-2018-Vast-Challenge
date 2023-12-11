@@ -26,7 +26,7 @@ function setMap() {
                 return 5;
     
             return 0;
-    }})
+}})
     .attr("fill", function(d, i) {
         if (getSelectedFileId() == d[0])
             return "red"
@@ -37,7 +37,7 @@ function setMap() {
         if (getSelectedFileId() == d[0])
             return "1"
 
-        return "0.15";
+        return "0.5"
     });
 }
     
@@ -46,7 +46,7 @@ function checkYear(year)
     birdId = getSelectedFileId()
     currentYear = birdSoundsByFileId[birdId]["year"]
 
-    return (year == currentYear) 
+    return (year == currentYear || year == currentYear - 1 || year == currentYear + 1) 
 }
 
 function checkName(name)
