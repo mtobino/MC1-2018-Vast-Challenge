@@ -95,3 +95,19 @@
 .bar-graph-container p, h3 {
     margin: 0;
 }
+
+.custom-axis path,
+.custom-axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.custom-axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+#birdDropdown {
+    margin-left: 10px; 
+}

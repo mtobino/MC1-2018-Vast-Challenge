@@ -8,6 +8,7 @@
         <script src="mattJS.js" defer></script>
         <script src="script.js" defer></script>
         <script src="Queenscoat.js" defer></script>
+        <script src="connorJS.js" defer></script>
 
         <script type="text/javascript" src="d3/d3.v3.js"></script>
         
@@ -23,6 +24,12 @@
         <script type="text/javascript" src="spectrogram.js"></script>
     </head>
     <body>
+        <h1>MC1-2018 Vast Challenge</h1>
+        <p>Here we present our claims tht Kaisos is in the wrong and the reason for the Blue Rose-Crested Pipit's sudden migration from the reserve.</p>
+        <br>
+        <br>
+        <h2>Research:</h2>
+        <p>Below you can see the difference between the test birds' auidos and spectrograms, and the officially confirmed recorded bird calls in the reserve.</p>
         <div class="info spectrogram-inf-container">
             <div id="main-spectrogram"></div>
             <div class="side-panel">
@@ -65,8 +72,12 @@
                 <audio id="test-bird-audio-controls" controls></audio>
             </div>
         </div>
+        <br>
+        <h2>Location and Statiscal Information of Chosen Bird</h2>
+        <p>Here you can see the location of the chosen bird and a graph depicting the amount of grades for that bird and that particular vocalization type. </p>
         <div class="info">
             <div class="map">
+                <h2>See where the bird you chose resides</h2>
                 <p>Map Of Area</p>
                 <svg id="road-map"></svg>
             </div>
@@ -76,6 +87,59 @@
                 <div id="bar-graph">
                 </div>
             </div>
+            
+        </div>
+        <h2>Statiscal Information for a given species</h2>
+        <p>Select a species and view how many of the birds were in the reserve for a recorded year.</p>
+        <div class="info">
+            <div class="bar-graph-container">
+                <h1>Bird Count Chart Selection
+                    <select id="birdDropdown"></select>
+                </h1>
+                <p>Select a bird and see the statiscal information of that species</p>
+            </div>
+            <div class="bar-graph-container">
+                <h2>Statiscal information for chosen bird species</h2>
+                <div id="connor-bar">
+    
+                </div>
+            </div>
+        </div>
+        <div class="conclusion">
+            <h1>Conclusion: Kasios Office Furniture is responsible for the decline in the Rose-Crested Blue Pipit population in the Boonsong Lekagul Wildlife Preserve. </h1>
+            <br>
+            <h3>Proof</h3>
+            <p>Methylosmolene Usage</p>
+            <ul>
+                <li>Alleged use of banned Methylosmolene in Kasios' manufacturing process.</li>
+                <li>Potential direct impact on environmental conditions crucial for Pipit survival.</li>
+            </ul>
+            <p>Contamination Site Proximity</p>
+            <ul>
+                <li>Detection of Methylosmolene in Kasios' smokestack emissions.</li>
+                <li>Surreptitious dumping in the northeast region of the Preserve.</li>
+                <li>Indicates a direct correlation between Kasios' industrial activities and Pipit habitat contamination.</li>
+            </ul>
+            <p>Spatial Analysis of Pipit Audio Files</p>
+            <ul>
+                <li>Charts illustrating the location of audio files of alleged 15 Rose-Crested Blue Pipits.</li>
+                <li>Deviation from their original cluster suggests displacement from their main habitat.</li>
+                <li>Contradicts Kasios' claim of a thriving Pipit population across the Preserve.</li>
+            </ul>
+            <p>These points reinforce the hypothesis that Kasios' industrial practices, specifically the use of Methylosmolene and contamination in proximity to the Preserve, may have adversely affected the Rose-Crested Blue Pipit population. The spatial analysis further highlights the discrepancy between Kasios' claims and the observed locations of Pipit audio files.</p>
+            <br>
+            <p>Spectrogram Analysis</p>
+            <ul>
+                <li>Only 2 out of all provided audio files match Rose-Crested Blue Pipit vocalizations.</li>
+                <li>Undermines Kasios' claim that all calls are from thriving Pipits.</li>
+            </ul>
+            <p>Limited Pipit Representation</p>
+            <ul>
+                <li>Few confirmed Pipit calls in the entire dataset.</li>
+                <li>Questions the accuracy of Kasios' dataset supporting their thriving Pipit population claim.</li>
+            </ul>
+            <p>The evidence challenges Kasios' claim of a thriving Rose-Crested Blue Pipit population. Only three matching calls were found, confirming the suspicion of Kasios' defense. The scarcity of Pipit calls in the dataset raises concerns about data accuracy. Overall, the evidence suggests that Kasios' claims may not accurately represent the Pipit population in the Boonsong Lekagul Wildlife Preserve.
+            </p>
         </div>
     </body>
 </html>
