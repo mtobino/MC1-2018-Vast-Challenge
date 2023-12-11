@@ -1,0 +1,12 @@
+MC1-2018-Vast-Challenge:
+========================
+
+index-all-sounds.html - Shows all bird calls. This utilizes a very large data file and may have issues on some computers.
+index.html - Shows a subset of all bird calls. This uses a smaller data file, but only has ~200 bird calls.
+
+Contributions:
+Connor: Created bar chart for bird call count by year for a selected bird species.
+Sean: Created dynamic mapping for the bird to show locations of selected bird species in a span of +/- 1 year of the selected bird call. Presented progress #3 
+David: Created spectrograms for selected bird call and test bird call. Processed bird call audio files and cleaned.csv into Javascript files.
+Matt: Created bar chart for number of bird calls per quality category for the chosen bird species and vocalization type. Merged code from Sean and Connor.
+Ben: Made Queenscoat.js, but did not integrate it into the final page.

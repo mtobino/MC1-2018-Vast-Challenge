@@ -1,1 +1,0 @@
-# MC1-2018-Vast-Challenge
