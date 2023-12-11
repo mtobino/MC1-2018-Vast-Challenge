@@ -2,7 +2,7 @@ function setMap() {
 
     birdId = getSelectedFileId()
     
-    var mapSvg = d3.select("#roadMap")
+    var mapSvg = d3.select("#road-map")
     
     mapSvg.selectAll("circle").remove();
     

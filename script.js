@@ -68,6 +68,7 @@ function updateFileIdList() {
     let fileIds = birdSoundsDrillDown[birdName][vocalizationType];
     updateList("#file-id", fileIds);
     onFileIdSelected();
+    updateBirdBarGraph();
 }
 
 function onFileIdSelected() {
@@ -90,6 +91,7 @@ function onFileIdSelected() {
         .text((d) => birdSoundsByFileId[fileId][d]);
 
     setAudio(birdSounds, fileId, mainSpectrogram);
+    setMap();
 }
 
 function onTestBirdIdSelected() {
@@ -102,20 +104,11 @@ birdNames.sort();
 updateList("#bird-name", birdNames);
 
 d3.select("#bird-name") // when a bird name is selected
-    .on("change", (e) => {
-        updateVocalizationTypeList();
-        updateBirdBarGraph();
-    });
+    .on("change", updateVocalizationTypeList);
 d3.select("#vocalization-type") // when the vocalization type is changed
-    .on("change", (e) => {
-        updateFileIdList();
-        updateBirdBarGraph();
-    });
+    .on("change", updateFileIdList);
 d3.select("#file-id")
-    .on("change", (e) => {
-        onFileIdSelected();
-        setMap(); 
-    });
+    .on("change", onFileIdSelected);
 updateVocalizationTypeList();
 
 let testBirdIds = Object.getOwnPropertyNames(testBirdSounds);

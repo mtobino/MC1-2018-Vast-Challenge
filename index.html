@@ -4,9 +4,9 @@
         <meta charset="utf-8">
         <title>VAST</title>
         <link rel="stylesheet" href="styles.css" />
-        <script src="script.js" defer></script>
         <script src="seanJS.js" defer></script>
         <script src="mattJS.js" defer></script>
+        <script src="script.js" defer></script>
 
         <script type="text/javascript" src="d3/d3.v3.js"></script>
         
@@ -22,7 +22,7 @@
         <script type="text/javascript" src="spectrogram.js"></script>
     </head>
     <body>
-        <div class="info">
+        <div class="info spectrogram-inf-container">
             <div id="main-spectrogram"></div>
             <div class="side-panel">
                 <div class="sound-selection">
@@ -49,7 +49,7 @@
                 <audio id="main-audio-controls" controls></audio>
             </div>
         </div>
-        <div class="info">
+        <div class="info spectrogram-inf-container">
             <div id="test-bird-spectrogram"></div>
             <div class="side-panel">
                 <div class="sound-selection">
@@ -64,17 +64,16 @@
                 <audio id="test-bird-audio-controls" controls></audio>
             </div>
         </div>
-        <div class="map">
-            <p>Map Of Area</p>
-            <div id="canvas">
-                <svg id="roadMap" widgth="400" height="400"></svg>
+        <div class="info">
+            <div class="map">
+                <p>Map Of Area</p>
+                <svg id="road-map" widgth="400" height="400"></svg>
             </div>
-        </div>
-        <div class="canvas" id="bar-graph-container">
-            <h3>Bar Graph of Bird Vocalization Type, Grade, and how many of each grade</h3>
-            <p>As you choose a bird, and choose a Vocalization Type, the graph will update to match</p>
-            <div id="bar-graph">
-
+            <div class="bar-graph-container">
+                <h3>Bar Graph of Bird Vocalization Type, Grade, and how many of each grade</h3>
+                <p>As you choose a bird, and choose a Vocalization Type, the graph will update to match</p>
+                <div id="bar-graph">
+                </div>
             </div>
         </div>
     </body>
