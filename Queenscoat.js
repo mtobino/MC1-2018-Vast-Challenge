@@ -1,15 +1,4 @@
-<html>
-    <head>
-        <title>Queenscoat</title>
-    </head>
-    <body>
-        <h1>Queenscoat</h1>
-        <p>2011-2018</p>
-    </body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Line Graph</title>
