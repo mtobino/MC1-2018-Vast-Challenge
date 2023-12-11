@@ -3,9 +3,10 @@
     <head>
         <meta charset="utf-8">
         <title>VAST</title>
-
         <link rel="stylesheet" href="styles.css" />
         <script src="script.js" defer></script>
+        <script src="seanJS.js" defer></script>
+        <script src="mattJS.js" defer></script>
 
         <script type="text/javascript" src="d3/d3.v3.js"></script>
         
@@ -61,6 +62,19 @@
                     <h3>Metadata</h3>
                 </div>
                 <audio id="test-bird-audio-controls" controls></audio>
+            </div>
+        </div>
+        <div class="map">
+            <p>Map Of Area</p>
+            <div id="canvas">
+                <svg id="roadMap" widgth="400" height="400"></svg>
+            </div>
+        </div>
+        <div class="canvas" id="bar-graph-container">
+            <h3>Bar Graph of Bird Vocalization Type, Grade, and how many of each grade</h3>
+            <p>As you choose a bird, and choose a Vocalization Type, the graph will update to match</p>
+            <div id="bar-graph">
+
             </div>
         </div>
     </body>

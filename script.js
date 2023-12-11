@@ -101,12 +101,21 @@ let birdNames = Object.getOwnPropertyNames(birdSoundsDrillDown);
 birdNames.sort();
 updateList("#bird-name", birdNames);
 
-d3.select("#bird-name")
-    .on("change", updateVocalizationTypeList);
-d3.select("#vocalization-type")
-    .on("change", updateFileIdList);
+d3.select("#bird-name") // when a bird name is selected
+    .on("change", (e) => {
+        updateVocalizationTypeList();
+        updateBirdBarGraph();
+    });
+d3.select("#vocalization-type") // when the vocalization type is changed
+    .on("change", (e) => {
+        updateFileIdList();
+        updateBirdBarGraph();
+    });
 d3.select("#file-id")
-    .on("change", onFileIdSelected);
+    .on("change", (e) => {
+        onFileIdSelected();
+        setMap(); 
+    });
 updateVocalizationTypeList();
 
 let testBirdIds = Object.getOwnPropertyNames(testBirdSounds);
