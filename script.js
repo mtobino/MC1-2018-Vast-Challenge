@@ -1,5 +1,5 @@
- // Filter out vocalization types and file ids that don't exist in bird-sounds-db.js
- for (const englishName in birdSoundsDrillDown) {
+// Filter out vocalization types and file ids that don't exist in bird-sounds-db.js
+for (const englishName in birdSoundsDrillDown) {
     const byVocalizationType = birdSoundsDrillDown[englishName];
     for (const vocalizationType in byVocalizationType) {
         byVocalizationType[vocalizationType] = byVocalizationType[vocalizationType]
@@ -12,27 +12,37 @@
     }
 }
 
-var audioData = undefined;
-var audioObjectURL = "";
+var mainSpectrogram = {
+    audioData: undefined,
+    audioObjectUrl: "",
+    audioControls: d3.select("#main-audio-controls"),
+    visualization: new SpectrogramVisualization(document.getElementById("main-spectrogram"))
+};
+var testBirdSpectrogram = {
+    audioData: undefined,
+    audioObjectUrl: "",
+    audioControls: d3.select("#test-bird-audio-controls"),
+    visualization: new SpectrogramVisualization(document.getElementById("test-bird-spectrogram"))
+};
 
-// Returns the name of the bird
 function getSelectedBirdName() {
     return document.getElementById("bird-name").value;
 }
 function getSelectedVocalizationType() {
     return document.getElementById("vocalization-type").value;
 }
-
-// Returns the file-ID value that the user has selected
 function getSelectedFileId() {
     return document.getElementById("file-id").value;
+}
+
+function getSelectedTestBirdId() {
+    return document.getElementById("test-bird-id").value;
 }
 
 function updateList(selector, dataset) {
     let selection = d3.select(selector)
         .selectAll("option")
         .data(dataset);
-        console.log
     // Add new options
     selection.enter()
         .append("option");
@@ -58,8 +68,8 @@ function updateFileIdList() {
     let fileIds = birdSoundsDrillDown[birdName][vocalizationType];
     updateList("#file-id", fileIds);
     onFileIdSelected();
+    updateBirdBarGraph();
 }
-
 
 function onFileIdSelected() {
     let fileId = getSelectedFileId();
@@ -80,7 +90,13 @@ function onFileIdSelected() {
     p.append("span")
         .text((d) => birdSoundsByFileId[fileId][d]);
 
-    setAudio(fileId);
+    setAudio(birdSounds, fileId, mainSpectrogram);
+    setMap();
+}
+
+function onTestBirdIdSelected() {
+    let testBirdId = getSelectedTestBirdId();
+    setAudio(testBirdSounds, testBirdId, testBirdSpectrogram);
 }
 
 let birdNames = Object.getOwnPropertyNames(birdSoundsDrillDown);
@@ -88,30 +104,53 @@ birdNames.sort();
 updateList("#bird-name", birdNames);
 
 d3.select("#bird-name") // when a bird name is selected
-    .on("change", (e) => 
-    {
-        updateVocalizationTypeList(); // update the vocalization type list  
-        updateBirdBarGraph(); // update the bar graph to the that bird
-    });
+    .on("change", updateVocalizationTypeList);
 d3.select("#vocalization-type") // when the vocalization type is changed
-    .on("change", (e) => {
-        updateFileIdList(); // update the file ids that apply 
-        updateBirdBarGraph(); // update the bar graph to the bird's vocalization type
-    });
+    .on("change", updateFileIdList);
 d3.select("#file-id")
-    .on("change", (e) =>
-    {
-        onFileIdSelected();
-        setMap(); 
-    });
+    .on("change", onFileIdSelected);
 updateVocalizationTypeList();
 
-function setAudio(fileId) {
-    if (audioObjectURL != "") {
-        URL.revokeObjectURL(audioObjectURL);
+let testBirdIds = Object.getOwnPropertyNames(testBirdSounds);
+updateList("#test-bird-id", testBirdIds);
+
+d3.select("#test-bird-id")
+    .on("change", onTestBirdIdSelected);
+onTestBirdIdSelected();
+
+function setAudio(source, fileId, spectrogramObj) {
+    if (spectrogramObj.audioObjectURL != "") {
+        URL.revokeObjectURL(spectrogramObj.audioObjectURL);
     }
-    let binString = atob(birdSounds[fileId]);
-    audioData = Uint8Array.from(binString, (m) => m.charCodeAt(0));
-    audioObjectURL = URL.createObjectURL(new Blob([audioData], {type: 'audio/opus'}));
-    document.getElementById("audio-controls").src = audioObjectURL;
+    console.log(`Setting audio file to ${fileId}`);
+    let binString = atob(source[fileId]);
+    spectrogramObj.audioData = Uint8Array.from(binString, (m) => m.charCodeAt(0));
+    spectrogramObj.audioObjectURL = URL.createObjectURL(new Blob([spectrogramObj.audioData], {type: 'audio/opus'}));
+    if (spectrogramObj.audioControls) {
+        spectrogramObj.audioControls.property("src", spectrogramObj.audioObjectURL);
+    }
+    spectrogramObj.visualization.updateSpectrogram(spectrogramObj.audioData);
 }
+
+function linkAudioControls(spectrogramObj) {
+    let audioControls = spectrogramObj.audioControls.node();
+    var playHeadInterval = -1;
+    function updatePlayhead() {
+        spectrogramObj.visualization.updatePlayhead(!audioControls.paused, audioControls.currentTime);
+        if (audioControls.paused) {
+            clearInterval(playHeadInterval);
+        }
+    }
+    spectrogramObj.audioControls
+        .on("play", () => {
+            clearInterval(playHeadInterval);
+            playHeadInterval = setInterval(updatePlayhead, 1000/30);
+        })
+        .on("timeupdate", updatePlayhead)
+        .on("ended", () => {
+            clearInterval(playHeadInterval);
+            updatePlayhead();
+        });
+}
+linkAudioControls(mainSpectrogram);
+linkAudioControls(testBirdSpectrogram);
